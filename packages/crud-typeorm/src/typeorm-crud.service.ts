@@ -570,11 +570,13 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
         ? cond.select.filter((column) => allowedRelation.allowedColumns.some((allowed) => allowed === column))
         : allowedRelation.allowedColumns;
 
-      const select = new Set(
-        [...allowedRelation.primaryColumns, ...(isArrayFull(options.persist) ? options.persist : []), ...columns].map(
-          (col) => `${alias}.${col}`,
-        ),
-      );
+      const select = [
+        ...new Set([
+          ...allowedRelation.primaryColumns, 
+          ...(isArrayFull(options.persist) ? options.persist : []), 
+          ...columns
+          ])
+        ].map((col) => `${alias}.${col}`);
 
       builder.addSelect(Array.from(select));
     }
@@ -789,13 +791,13 @@ export class TypeOrmCrudService<T> extends CrudService<T> {
         ? query.fields.filter((field) => allowed.some((col) => field === col))
         : allowed;
 
-    const select = new Set(
-      [
+    const select = [
+      ...new Set([
         ...(options.persist && options.persist.length ? options.persist : []),
         ...columns,
         ...this.entityPrimaryColumns,
-      ].map((col) => `${this.alias}.${col}`),
-    );
+      ]),
+    ].map((col) => `${this.alias}.${col}`);
 
     return Array.from(select);
   }
